@@ -32,7 +32,7 @@ fi
 
 CFG_FILE="./package/base-files/files/bin/config_generate"
 #修改默认IP地址
-sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $CFG_FILE
+#sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $CFG_FILE
 #修改默认主机名
 sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
 
@@ -52,30 +52,3 @@ if [ -n "$WRT_PACKAGE" ]; then
 	echo -e "$WRT_PACKAGE" >> ./.config
 fi
 
-#高通平台调整
-DTS_PATH="./target/linux/qualcommax/dts/"
-if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
-	#取消nss相关feed
-	echo "CONFIG_FEED_nss_packages=n" >> ./.config
-	echo "CONFIG_FEED_sqm_scripts_nss=n" >> ./.config
-	#开启sqm-nss插件
-	echo "CONFIG_PACKAGE_luci-app-sqm=y" >> ./.config
-	echo "CONFIG_PACKAGE_sqm-scripts-nss=y" >> ./.config
-	#设置NSS版本
-	echo "CONFIG_NSS_FIRMWARE_VERSION_11_4=n" >> ./.config
-	if [[ "${WRT_CONFIG,,}" == *"ipq50"* ]]; then
-		echo "CONFIG_NSS_FIRMWARE_VERSION_12_2=y" >> ./.config
-	else
-		echo "CONFIG_NSS_FIRMWARE_VERSION_12_5=y" >> ./.config
-	fi
-	#无WIFI配置调整Q6大小
-	if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
-		find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
-		echo "qualcommax set up nowifi successfully!"
-	fi
-	#其他调整
-	echo "CONFIG_PACKAGE_kmod-usb-serial-qualcomm=y" >> ./.config
-fi
-#亚瑟修复USB2.0日志报错问题
-wget -qO - https://github.com/davidtall/immortalwrt/commit/ce39feb4.patch | patch -p1
-cat ./target/linux/qualcommax/dts/ipq6000-re-ss-01.dts
