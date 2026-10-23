@@ -35,8 +35,8 @@ jobs:
       fail-fast: false
       #max-parallel: 3
       matrix:
-#        CONFIG: [MEDIATEK, IPQ807X-WIFI,IPQ60XX-NOWIFI, IPQ60XX-WIFI]
-        CONFIG: [MEDIATEK, IPQ60XX-NOWIFI]
+#        CONFIG: [MEDIATEK]
+        CONFIG: [MEDIATEK]
         SOURCE: [VIKINGYFY/immortalwrt]
 #        SOURCE: [davidtall/immortalwrt]
         BRANCH: [main]
